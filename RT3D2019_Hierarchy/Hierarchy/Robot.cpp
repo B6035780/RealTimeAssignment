@@ -119,6 +119,8 @@ void Robot::releaseResources()
 	delete s_pRight_WristMesh;
 
 	xmlIdle.Clear();
+	xmlAttack.Clear();
+	xmlDie.Clear();
 }
 
 void Robot::draw()
