@@ -32,8 +32,6 @@ private:
 	static CommonMesh* s_pRight_KneeMesh;
 	static CommonMesh* s_pRight_ShoulderMesh;
 	static CommonMesh* s_pRight_WristMesh;
-
-	static bool s_bResourcesReady;
 	
 	XMFLOAT4 m_v4Rot; // Euler rotation angles
 	XMFLOAT4 m_v4Pos; // World position
