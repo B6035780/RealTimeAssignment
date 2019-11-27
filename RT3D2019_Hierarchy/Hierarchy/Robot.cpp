@@ -1,5 +1,5 @@
 #include "Robot.h"
-
+#include <cassert>
 
 CommonMesh* Robot::s_pBodyMesh = NULL; 
 CommonMesh* Robot::s_pLeft_AnkleMesh = NULL;
@@ -17,6 +17,7 @@ CommonMesh* Robot::s_pRight_KneeMesh = NULL;
 CommonMesh* Robot::s_pRight_ShoulderMesh = NULL;
 CommonMesh* Robot::s_pRight_WristMesh = NULL;
 
+tinyxml2::XMLDocument Robot::xmlIdle = NULL;
 
 Robot::Robot()
 {
@@ -24,6 +25,7 @@ Robot::Robot()
 
 Robot::Robot(float _x, float _y, float _z, float rotY)
 {
+	//initialise Offsets and rotations
 	m_v4Pos = XMFLOAT4(_x, _y, _z, 0.0f);
 	m_v4Rot = XMFLOAT4(0.0f, rotY, 0.0f, 0.0f);
 	
@@ -75,6 +77,7 @@ Robot::Robot(float _x, float _y, float _z, float rotY)
 
 void Robot::loadResources()
 {
+	//Load Meshes
 	s_pBodyMesh = CommonMesh::LoadFromXFile(Application::s_pApp, "Resources/Robot/body.x");
 	s_pLeft_AnkleMesh = CommonMesh::LoadFromXFile(Application::s_pApp, "Resources/Robot/left_ankle.x");
 	s_pLeft_ElbowMesh = CommonMesh::LoadFromXFile(Application::s_pApp, "Resources/Robot/left_elbow.x");
@@ -90,6 +93,11 @@ void Robot::loadResources()
 	s_pRight_KneeMesh = CommonMesh::LoadFromXFile(Application::s_pApp, "Resources/Robot/right_knee.x");
 	s_pRight_ShoulderMesh = CommonMesh::LoadFromXFile(Application::s_pApp, "Resources/Robot/right_shoulder.x");
 	s_pRight_WristMesh = CommonMesh::LoadFromXFile(Application::s_pApp, "Resources/Robot/right_wrist.x");
+
+	//Load animation files using assert checks
+	assert(0 == xmlIdle.LoadFile("Resources/Animations/RobotIdleAnim.xml"));
+	assert(0 == xmlIdle.LoadFile("Resources/Animations/RobotAttackAnim.xml"));
+	assert(0 == xmlIdle.LoadFile("Resources/Animations/RobotDieAnim.xml"));
 }
 
 void Robot::releaseResources()
@@ -109,6 +117,8 @@ void Robot::releaseResources()
 	delete s_pRight_KneeMesh;
 	delete s_pRight_ShoulderMesh;
 	delete s_pRight_WristMesh;
+
+	xmlIdle.Clear();
 }
 
 void Robot::draw()

@@ -2,6 +2,7 @@
 #define ROBOT_H
 
 #include "Application.h"
+#include "tinyxml2.h"
 
 class Robot
 {
@@ -32,6 +33,8 @@ private:
 	static CommonMesh* s_pRight_KneeMesh;
 	static CommonMesh* s_pRight_ShoulderMesh;
 	static CommonMesh* s_pRight_WristMesh;
+
+	static tinyxml2::XMLDocument xmlIdle, xmlAttack, xmlDie; //Animation XML files
 	
 	XMFLOAT4 m_v4Rot; // Euler rotation angles
 	XMFLOAT4 m_v4Pos; // World position
