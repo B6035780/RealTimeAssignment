@@ -15,3 +15,8 @@ Parser* Parser::getParser()
 	return instance;
 }
 
+void parseAnimationFile(tinyxml2::XMLDocument anim)
+{
+
+
+}
