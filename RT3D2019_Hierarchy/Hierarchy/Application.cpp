@@ -49,7 +49,7 @@ void Application::HandleStop()
 	delete m_pHeightMap;
 	Aeroplane::ReleaseResources();
 	delete m_pAeroplane;
-	Robot::releaseResources();
+	m_pRobot->releaseResources();
 	delete m_pRobot;
 
 	this->CommonApp::HandleStop();
