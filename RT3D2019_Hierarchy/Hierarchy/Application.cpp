@@ -51,6 +51,7 @@ void Application::HandleStop()
 	delete m_pAeroplane;
 	m_pRobot->releaseResources();
 	delete m_pRobot;
+	Parser::deleteParser();
 
 	this->CommonApp::HandleStop();
 }

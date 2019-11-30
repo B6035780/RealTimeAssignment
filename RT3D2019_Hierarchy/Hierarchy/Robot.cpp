@@ -16,82 +16,82 @@ Robot::Robot(float _x, float _y, float _z, float rotY)
 
 	pos = XMFLOAT4(_x, _y, _z, 0.0f);
 	rot = XMFLOAT4(0.0f, rotY, 0.0f, 0.0f);
-	root = new Component(pos, rot, NULL);
+	root = new Component(pos, rot, NULL, "root");
 	components.push_back(root);
 	
 	pos = XMFLOAT4(-0.0250011f, 1.525f, -0.0000005, 0.0f);
 	rot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	pelvis = new Component(pos, rot, root);
+	pelvis = new Component(pos, rot, root, "pelvis");
 	components.push_back(pelvis);
 
 	pos = XMFLOAT4(0.0500099f, 4.3749992f, 0.0000003f, 0.0f);
 	rot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	body = new Component(pos, rot, pelvis);
+	body = new Component(pos, rot, pelvis, "body");
 	components.push_back(body);
 
 	pos = XMFLOAT4(4.6f, 0.0f, -0.0009992f, 0.0f);
 	rot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	left_Shoulder = new Component(pos, rot, body);
+	left_Shoulder = new Component(pos, rot, body, "left_shoulder");
 	components.push_back(left_Shoulder);
 
 	pos = XMFLOAT4(3.4250019f, -0.0499817f, -0.0004262f, 0.0f);
 	rot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	left_Elbow = new Component(pos, rot, left_Shoulder);
+	left_Elbow = new Component(pos, rot, left_Shoulder, "left_elbow");
 	components.push_back(left_Elbow);
 
 	pos = XMFLOAT4(5.5250008f, -0.0999710f, 0.0003968f, 0.0f);
 	rot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	left_Wrist = new Component(pos, rot, left_Elbow);
+	left_Wrist = new Component(pos, rot, left_Elbow, "left_wrist");
 	components.push_back(left_Wrist);
 
 	pos = XMFLOAT4(-4.4500023f, 0.0500000f, -0.000021f, 0.0f);
 	rot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	right_Shoulder = new Component(pos, rot, body);
+	right_Shoulder = new Component(pos, rot, body, "right_shoulder");
 	components.push_back(right_Shoulder);
 	
 	pos = XMFLOAT4(-3.3999996f, 0.0250229f, -0.0000194f, 0.0f);
 	rot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	right_Elbow = new Component(pos, rot, right_Shoulder);
+	right_Elbow = new Component(pos, rot, right_Shoulder, "right_elbow");
 	components.push_back(right_Elbow);
 	
 	pos = XMFLOAT4(-6.0000381f, -0.1750183f, 0.0007156f, 0.0f);
 	rot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	right_Wrist = new Component(pos, rot, right_Elbow);
+	right_Wrist = new Component(pos, rot, right_Elbow, "right_wrist");
 	components.push_back(right_Wrist);
 
 	pos = XMFLOAT4(0.0249983f, 3.6625015f, 2.5999998f, 0.0f);
 	rot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	neck = new Component(pos, rot, body);
+	neck = new Component(pos, rot, body, "neck");
 	components.push_back(neck);
 
 	pos = XMFLOAT4(1.9500000f, -0.7724991f, 0.000000f, 0.0f);
 	rot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	left_Hip = new Component(pos, rot, root);
+	left_Hip = new Component(pos, rot, root, "left_hip");
 	components.push_back(left_Hip);
 
 	pos = XMFLOAT4(0.0000006f, -2.2200001f, 0.000000f, 0.0f);
 	rot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	left_Knee = new Component(pos, rot, left_Hip);
+	left_Knee = new Component(pos, rot, left_Hip, "left_knee");
 	components.push_back(left_Knee);
 
 	pos = XMFLOAT4(-0.0800152f, -3.6399994f, -0.0000098f, 0.0f);
 	rot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	left_Ankle = new Component(pos, rot, left_Knee);
+	left_Ankle = new Component(pos, rot, left_Knee, "left_ankle");
 	components.push_back(left_Ankle);
 
 	pos = XMFLOAT4(-1.9500000f, -0.7724991, 0.000000f, 0.0f);
 	rot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	right_Hip = new Component(pos, rot, root);
+	right_Hip = new Component(pos, rot, root, "right_hip");
 	components.push_back(right_Hip);
 
 	pos = XMFLOAT4(0.0000006f, -2.2000000f, 0.000000f, 0.0f);
 	rot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	right_Knee = new Component(pos, rot, right_Hip);
+	right_Knee = new Component(pos, rot, right_Hip, "right_knee");
 	components.push_back(right_Knee);
 
 	pos = XMFLOAT4(0.0199911f, -3.6799995f, 0.000039f, 0.0f);
 	rot = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	right_Ankle = new Component(pos, rot, right_Knee);
+	right_Ankle = new Component(pos, rot, right_Knee, "right_ankle");
 	components.push_back(right_Ankle);
 }
 
@@ -116,8 +116,8 @@ void Robot::loadResources()
 
 	//Load animation files using assert checks
 	assert(0 == xmlIdle.LoadFile("Resources/Animations/RobotIdleAnim.xml"));
-	assert(0 == xmlIdle.LoadFile("Resources/Animations/RobotAttackAnim.xml"));
-	assert(0 == xmlIdle.LoadFile("Resources/Animations/RobotDieAnim.xml"));
+	assert(0 == xmlAttack.LoadFile("Resources/Animations/RobotAttackAnim.xml"));
+	assert(0 == xmlDie.LoadFile("Resources/Animations/RobotDieAnim.xml"));
 }
 
 void Robot::releaseResources()
@@ -178,7 +178,43 @@ void Robot::updateMatricies()
 
 void Robot::update()
 {
+	if (checkAnimationInput() != animationPlaying)
+		changeAnimation(checkAnimationInput());
+
 	updateMatricies();
+}
+
+void Robot::changeAnimation(int anim)
+{
+	switch (anim)
+	{
+	case IDLE:
+		PARSER->parseAnimationFile(&xmlIdle, components);
+		break;
+	case ATTACK:
+		PARSER->parseAnimationFile(&xmlAttack, components);
+		break;
+	case DIE:
+		PARSER->parseAnimationFile(&xmlDie, components);
+		break;
+	}
+}
+
+void Robot::updateAnimation()
+{
+
+}
+
+int Robot::checkAnimationInput()
+{
+	if (Application::s_pApp->IsKeyPressed('1'))
+		return 1;
+	else if (Application::s_pApp->IsKeyPressed('2'))
+		return 2;
+	else if (Application::s_pApp->IsKeyPressed('3'))
+		return 3;
+	else
+		return 0;
 }
 
 Robot::~Robot()
