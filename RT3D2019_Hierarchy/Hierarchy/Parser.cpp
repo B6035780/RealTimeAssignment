@@ -1,7 +1,6 @@
 #include "Parser.h"
 
-Parser* Parser::instance = 0;
-const tinyxml2::XMLDocument* Parser::workingFile = NULL;
+Parser* Parser::instance = NULL;
 
 Parser::Parser()
 {
@@ -9,15 +8,15 @@ Parser::Parser()
 
 Parser* Parser::getParser()
 {
-	if (instance == 0)
+	if (instance == NULL)
 		instance = new Parser();
 
 	return instance;
 }
 
-void Parser::parseAnimationFile(tinyxml2::XMLDocument* file, std::vector<Component*> comps)
+void Parser::parseAnimationFile(const tinyxml2::XMLDocument* file, std::vector<Component*> comps)
 {
-	tinyxml2::XMLNode* currentAnim = file->FirstChild()->FirstChild();
+	const tinyxml2::XMLNode* currentAnim = file->FirstChild()->FirstChild();
 	std::string animName;
 	std::string compName, animType;
 	bool hasSibling = true;
@@ -41,6 +40,34 @@ void Parser::parseAnimationFile(tinyxml2::XMLDocument* file, std::vector<Compone
 			currentAnim = currentAnim->NextSibling();
 	}
 
+}
+
+void Parser::parseHierarchyFile(std::string filePath, std::vector<Component*>& comps)
+{
+	std::fstream fs;
+	std::string name, parent, temp;	//temp used to clear punctuation between variables
+	XMFLOAT4 offset;
+	XMFLOAT4 rot = XMFLOAT4(0, 0, 0, 0);
+	float x, y, z;
+	char c;	//used to check end of file
+
+	fs.open(filePath);
+	assert(fs.is_open());
+
+	while (fs.get(c))
+	{
+		fs >> name;
+		name = name.substr(0, name.size() - 1);	//Get rid of /" chars in name
+		fs >> parent;
+		parent = parent.substr(1, parent.size() - 2);
+		fs >> x >> temp; 
+		fs >> y >> temp; 
+		fs >> z;
+
+		offset = XMFLOAT4(x / 10, y / 10, z / 10, 0);
+		comps.push_back(new Component(offset, rot, parent, name));
+		fs.get(c);
+	}
 }
 
 void Parser::parseAnimation(const std::string& animName, const tinyxml2::XMLNode* currentAnim, Component* comp)
@@ -96,6 +123,37 @@ void Parser::parseAnimation(const std::string& animName, const tinyxml2::XMLNode
 	{
 		
 	}
+}
+
+int Parser::getNumberOfKeyFrames(const tinyxml2::XMLDocument* file)	//Finds total num of keyframes in animation, by comparing frame count of every component
+{
+	int num(0), temp;
+	const tinyxml2::XMLNode* animRoot = file->FirstChild()->FirstChild();
+	const tinyxml2::XMLElement* anim = animRoot->FirstChild()->FirstChild()->ToElement();
+	std::stringstream ss;
+	bool hasSibling = true;
+
+	while (hasSibling)
+	{
+		ss << anim->Attribute("count");
+		ss >> temp;
+
+		if ( num < temp )
+		{ 
+			num = temp;
+		}
+
+		if (animRoot->NextSibling() == NULL)	//Exits out if there are no more animations to process
+			hasSibling = false;
+		else
+		{
+			animRoot = animRoot->NextSibling();
+			anim = animRoot->FirstChild()->FirstChild()->ToElement();
+			CLEAR(ss);
+		}
+	}
+
+	return num;
 }
 
 void Parser::deleteParser()

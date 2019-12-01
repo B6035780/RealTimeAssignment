@@ -7,14 +7,14 @@ __declspec(align(16)) class Component
 {
 public:
 	Component();
-	Component(XMFLOAT4 pos, XMFLOAT4 rot, Component* par, std::string nombre);
+	Component(XMFLOAT4 pos, XMFLOAT4 rot, std::string par, std::string nombre);
 	~Component();
 	
 	inline CommonMesh* getMesh() const { return s_pMesh; }
 	inline XMMATRIX getWorldMatrix() const { return m_mWorldMatrix; }
 	inline XMFLOAT4 getRot() const { return m_v4Rot; }
 	inline XMFLOAT4 getPos() const { return m_v4Pos; }
-	inline Component* getParent() const { return parent; }
+	inline std::string getParent() const { return parent; }
 	inline std::string getName() const { return name; }
 
 	inline void setWorldMatrix(XMMATRIX m) { m_mWorldMatrix = m; }
@@ -29,6 +29,16 @@ public:
 	inline void addRotationYKeyFrame(std::pair<float, float> rot) { rotationYKeyFrames.push_back(rot); }
 	inline void addRotationZKeyFrame(std::pair<float, float> rot) { rotationZKeyFrames.push_back(rot); }
 
+	inline std::pair<XMFLOAT4, float> getTranslationKeyFrame(int frame) const { return translationKeyFrames[frame]; }
+	inline std::pair<float, float> getRotationXKeyFrame(int frame) const { return rotationXKeyFrames[frame]; }
+	inline std::pair<float, float> getRotationYKeyFrame(int frame) const { return rotationYKeyFrames[frame]; }
+	inline std::pair<float, float> getRotationZKeyFrame(int frame) const { return rotationZKeyFrames[frame]; }
+
+	inline size_t getNoOfTranslationKeyFrames() const { return translationKeyFrames.size(); }
+	inline size_t getNoOfRotationXKeyFrames() const { return rotationXKeyFrames.size(); }
+	inline size_t getNoOfRotationYKeyFrames() const { return rotationYKeyFrames.size(); }
+	inline size_t getNoOfRotationZKeyFrames() const { return rotationZKeyFrames.size(); }
+
 	void* operator new(size_t i)
 	{
 		return _mm_malloc(i, 16);
@@ -40,7 +50,6 @@ public:
 	}
 private:
 	CommonMesh* s_pMesh;
-	Component* parent;
 
 	XMFLOAT4 m_v4Rot;
 	XMFLOAT4 m_v4Pos;
@@ -53,6 +62,7 @@ private:
 	std::vector<std::pair<float, float>> rotationZKeyFrames;
 
 	const std::string name; //Used for parsing
+	const std::string parent;
 };
 #endif
 

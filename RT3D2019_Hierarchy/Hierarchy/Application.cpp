@@ -23,7 +23,7 @@ bool Application::HandleStart()
 
 	m_pHeightMap = new HeightMap("Resources/heightmap.bmp", 2.0f);
 	m_pAeroplane = new Aeroplane(0.0f, 3.5f, 0.0f, 105.0f);
-	m_pRobot = new Robot(0.1027778f, 7.5644722f, 0.0f, 0.0f);
+	m_pRobot = new Robot();
 
 	m_pAeroplane->LoadResources();
 	m_pRobot->loadResources();
@@ -52,7 +52,6 @@ void Application::HandleStop()
 	m_pRobot->releaseResources();
 	delete m_pRobot;
 	Parser::deleteParser();
-
 	this->CommonApp::HandleStop();
 }
 

@@ -6,7 +6,7 @@ Component::Component()
 {
 }
 
-Component::Component(XMFLOAT4 pos, XMFLOAT4 rot, Component* par, std::string nombre)
+Component::Component(XMFLOAT4 pos, XMFLOAT4 rot, std::string par, std::string nombre)
 	:	m_v4Rot(rot), m_v4Pos(pos), parent(par), name(nombre)
 {
 

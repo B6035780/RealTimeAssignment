@@ -17,10 +17,11 @@ class Parser
 public:
 	static Parser* getParser();
 	static void deleteParser();
-	static void parseAnimationFile(tinyxml2::XMLDocument* file, std::vector<Component*> comps);
+	static void parseAnimationFile(const tinyxml2::XMLDocument* file, std::vector<Component*> comps);
+	static void parseHierarchyFile(std::string filePath, std::vector<Component*>& comps);
+	static int getNumberOfKeyFrames(const tinyxml2::XMLDocument* file);
 private:
 	static Parser* instance;
-	const static tinyxml2::XMLDocument* workingFile;
 	static void parseAnimation(const std::string& animName, const tinyxml2::XMLNode* currentAnim, Component* comp);
 
 	Parser();
