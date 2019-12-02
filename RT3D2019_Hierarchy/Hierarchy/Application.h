@@ -12,6 +12,8 @@
 #include "CommonApp.h"
 #include "CommonMesh.h"
 
+#define TIME std::chrono::high_resolution_clock::now()
+
 class Robot;
 class Aeroplane;
 class HeightMap;

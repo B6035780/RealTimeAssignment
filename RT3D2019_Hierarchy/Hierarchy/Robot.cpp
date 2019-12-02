@@ -31,10 +31,14 @@ void Robot::loadResources()
 		}
 	});
 
-	//Load animation files using assert checks
+	//Load animation files
 	assert(0 == xmlIdle.LoadFile("Resources/Animations/RobotIdleAnim.xml"));
 	assert(0 == xmlAttack.LoadFile("Resources/Animations/RobotAttackAnim.xml"));
 	assert(0 == xmlDie.LoadFile("Resources/Animations/RobotDieAnim.xml"));
+
+	animator->loadAnimation(&xmlIdle, components, "idle");
+	animator->loadAnimation(&xmlAttack, components, "attack");
+	animator->loadAnimation(&xmlDie, components, "die");
 }
 
 void Robot::releaseResources()
@@ -47,6 +51,8 @@ void Robot::releaseResources()
 		}
 		delete c;
 	});
+
+	animator->deleteAnimations();
 	delete animator;
 }
 
@@ -99,8 +105,8 @@ void Robot::update()
 	deltaTime = .000000001f * (TIME - lastFrame).count();
 	checkAnimationInput();
 
-	if ( animator->isAnimationPlaying() )
-		std::for_each(components.begin(), components.end(), std::bind(&Animator::updateAnimation, animator, std::placeholders::_1, deltaTime));
+	/*if ( animator->isAnimationPlaying() )
+		std::for_each(components.begin(), components.end(), std::bind(&Animator::updateAnimation, animator, std::placeholders::_1, deltaTime));*/
 
 	std::for_each(components.begin(), components.end(), std::bind(&Robot::updateMatricies, this, std::placeholders::_1));
 	lastFrame = TIME;
@@ -108,7 +114,7 @@ void Robot::update()
 
 void Robot::checkAnimationInput()
 {
-	if (Application::s_pApp->IsKeyPressed('1'))
+	/*if (Application::s_pApp->IsKeyPressed('1'))
 	{
 		animator->changeAnimation(&xmlIdle, components);
 	}
@@ -119,7 +125,7 @@ void Robot::checkAnimationInput()
 	else if (Application::s_pApp->IsKeyPressed('3'))
 	{
 		animator->changeAnimation(&xmlDie, components);
-	}
+	}*/
 }
 
 Robot::~Robot()

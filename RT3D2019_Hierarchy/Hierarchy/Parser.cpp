@@ -1,4 +1,5 @@
 #include "Parser.h"
+#include <map>
 
 Parser* Parser::instance = NULL;
 
@@ -14,23 +15,26 @@ Parser* Parser::getParser()
 	return instance;
 }
 
-void Parser::parseAnimationFile(const tinyxml2::XMLDocument* file, std::vector<Component*> comps)
+Animation* Parser::parseAnimationFile(const tinyxml2::XMLDocument* file, std::vector<Component*> comps)
 {
 	const tinyxml2::XMLNode* currentAnim = file->FirstChild()->FirstChild();
 	std::string animName;
 	std::string compName, animType;
 	bool hasSibling = true;
 
+	std::map<std::string, std::vector<KeyFrame>> keyFrames;
+	int noOfFrames = getNumberOfKeyFrames(file);
+
 	while (hasSibling)
 	{
 		animName = currentAnim->ToElement()->Attribute("id");	//Searches for the id attr holding the animation name
 		compName = animName.substr(0, animName.find("."));	//Searches for Component name, e.g root, which ends at fullstop
 
-		std::for_each(comps.begin(), comps.end(), [&compName, &currentAnim, &animName](Component* c)	//searches for component using parsed name
+		std::for_each(comps.begin(), comps.end(), [&compName, &currentAnim, &animName, &keyFrames](Component* c)	//searches for component using parsed name
 		{
 			if (c->getName() == compName)
 			{
-				parseAnimation(animName, currentAnim, c);
+				parseAnimation(animName, currentAnim, compName, keyFrames);
 			}
 		});
 
@@ -40,6 +44,7 @@ void Parser::parseAnimationFile(const tinyxml2::XMLDocument* file, std::vector<C
 			currentAnim = currentAnim->NextSibling();
 	}
 
+	return new Animation(keyFrames);
 }
 
 void Parser::parseHierarchyFile(std::string filePath, std::vector<Component*>& comps)
@@ -70,12 +75,13 @@ void Parser::parseHierarchyFile(std::string filePath, std::vector<Component*>& c
 	}
 }
 
-void Parser::parseAnimation(const std::string& animName, const tinyxml2::XMLNode* currentAnim, Component* comp)
+void Parser::parseAnimation(const std::string& animName, const tinyxml2::XMLNode* currentAnim, std::string compName, std::map<std::string, std::vector<KeyFrame>>& keyFrames)
 {
 	std::string animType = animName.substr(animName.find(".") + 1, animName.length()); //Searches for animation type, e.g translate, which starts at fullstop in animName
 	const tinyxml2::XMLNode* animSource = currentAnim->FirstChild(); //points to input array data. Next sibling is output array
 	int frameCount, counter;
-	float time, x, y, z; //used as temp variables for extracting data from sstream and passing to components
+	float x, y, z; //used as temp variables for extracting data from sstream and passing to components
+	KeyFrame k;
 	std::stringstream times, data, temp;
 	
 	times << animSource->FirstChild()->ToElement()->GetText(); //extracts times for frames
@@ -87,36 +93,53 @@ void Parser::parseAnimation(const std::string& animName, const tinyxml2::XMLNode
 	{
 		for (int i = 0; i < frameCount; ++i)	
 		{
-			times >> time;
+			times >> k.time;
 			data >> x >> y >> z;
-			comp->addTranslationKeyFrame(std::make_pair(XMFLOAT4(x, y, z, 0), time));
+			k.trans = XMFLOAT4(x / 10, y / 10, z / 10, 0);
+			if (keyFrames[compName].size() == i)
+				keyFrames[compName].push_back(k);
+			else
+				keyFrames[compName][i].trans = k.trans;
+			
 		}
 	}
 	else if (animType == "rotateX")
 	{
 		for (int i = 0; i < frameCount; ++i)
 		{
-			times >> time;
-			data >> x;
-			comp->addRotationXKeyFrame(std::make_pair(x, time));
+			times >> k.time;
+			data >> k.xRot;
+			if (keyFrames[compName].size() == i)
+			{
+				keyFrames[compName].push_back(k);
+				keyFrames[compName][i].trans = keyFrames[compName][i - 1].trans;	//If no translation exists for this frame, use the translation from last frame
+			}
+			else
+				keyFrames[compName][i].xRot = k.xRot;
 		}
 	}
 	else if (animType == "rotateY")
 	{
 		for (int i = 0; i < frameCount; ++i)
 		{
-			times >> time;
-			data >> y;
-			comp->addRotationYKeyFrame(std::make_pair(y, time));
+			times >> k.time;
+			data >> k.yRot;
+			if (keyFrames[compName].size() == i)
+				keyFrames[compName].push_back(k);
+			else
+				keyFrames[compName][i].yRot = k.yRot;
 		}
 	}
 	else if (animType == "rotateZ")
 	{
 		for (int i = 0; i < frameCount; ++i)
 		{
-			times >> time;
-			data >> z;
-			comp->addRotationZKeyFrame(std::make_pair(z, time));
+			times >> k.time;
+			data >> k.zRot;
+			if (keyFrames[compName].size() == i)
+				keyFrames[compName].push_back(k);
+			else
+				keyFrames[compName][i].zRot = k.zRot;
 		}
 	}
 	else if (animType == "visibility")
