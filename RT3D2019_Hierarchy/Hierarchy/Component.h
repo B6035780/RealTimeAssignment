@@ -29,10 +29,10 @@ public:
 	inline void addRotationYKeyFrame(std::pair<float, float> rot) { rotationYKeyFrames.push_back(rot); }
 	inline void addRotationZKeyFrame(std::pair<float, float> rot) { rotationZKeyFrames.push_back(rot); }
 
-	inline std::pair<XMFLOAT4, float> getTranslationKeyFrame(int frame) const { return translationKeyFrames[frame]; }
-	inline std::pair<float, float> getRotationXKeyFrame(int frame) const { return rotationXKeyFrames[frame]; }
-	inline std::pair<float, float> getRotationYKeyFrame(int frame) const { return rotationYKeyFrames[frame]; }
-	inline std::pair<float, float> getRotationZKeyFrame(int frame) const { return rotationZKeyFrames[frame]; }
+	inline std::vector<std::pair<XMFLOAT4, float>> getTranslationKeyFrames() const { return translationKeyFrames; }
+	inline std::vector<std::pair<float, float>> getRotationXKeyFrames() const { return rotationXKeyFrames; }
+	inline std::vector<std::pair<float, float>> getRotationYKeyFrames() const { return rotationYKeyFrames; }
+	inline std::vector<std::pair<float, float>> getRotationZKeyFrames() const { return rotationZKeyFrames; }
 
 	inline size_t getNoOfTranslationKeyFrames() const { return translationKeyFrames.size(); }
 	inline size_t getNoOfRotationXKeyFrames() const { return rotationXKeyFrames.size(); }

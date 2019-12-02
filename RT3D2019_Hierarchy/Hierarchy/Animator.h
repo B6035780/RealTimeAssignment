@@ -5,28 +5,30 @@
 #include "tinyxml2.h"
 #include "Parser.h"
 #include <chrono>
+#include <ctime>
 
+#define TIME std::chrono::high_resolution_clock::now()
 class Animator
 {
 public:
 	Animator();
 	~Animator();
-	void updateAnimation(Component* c);
+	void updateAnimation(Component* c, float dTime);
 	bool isAnimationPlaying();
 	void changeAnimation(tinyxml2::XMLDocument* anim, std::vector<Component*> components);
 
 private:
 	tinyxml2::XMLDocument* animationPlaying = NULL; 
-	int noOfFrames = 0;	
-	int keyFrame = 0;	
+	int noOfFrames = 0;		
 
 	float interpVal = 0;
 	float deltaTime = 0;
 
-	std::chrono::time_point<std::chrono::steady_clock> animationStart;
-	std::chrono::time_point<std::chrono::steady_clock> lastFrame;
+	bool hasChanged = true;
 
 	float lerp(float a, float b, float i);
+	void setRot(Component* c, int frame_1, int frame_2, float interp);
+	void setTrans(Component* c, int frame_1, int frame_2, float interp);
 };
 
 #endif

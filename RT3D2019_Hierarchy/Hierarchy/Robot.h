@@ -22,32 +22,16 @@ public:
 	void draw();
 	void update();
 private:
-
-	Component* root;
-	Component* pelvis;
-	Component* body;
-	Component* left_Shoulder;
-	Component* left_Elbow;
-	Component* left_Wrist;
-	Component* right_Shoulder;
-	Component* right_Elbow;
-	Component* right_Wrist;
-	Component* neck;
-	Component* left_Hip;
-	Component* left_Knee;
-	Component* left_Ankle;
-	Component* right_Hip;
-	Component* right_Knee;
-	Component* right_Ankle;
-
-	std::vector<Component*> components;	//Holds pointers to all components, so they can easily be used in for loops
+	std::vector<Component*> components;	
 	
 	static tinyxml2::XMLDocument xmlIdle, xmlAttack, xmlDie; //Animation XML files
 
-	Animator animator;
+	Animator* animator;
 
+	float deltaTime = 0;
+	std::chrono::time_point<std::chrono::high_resolution_clock> lastFrame;
 	void updateMatricies(Component* c);
-	void checkAnimationInput();	//Check if user has changed animation playing with 1, 2 and 3 keys
+	void checkAnimationInput();	//Check if user has changed animation with 1, 2 and 3 keys
 };
 
 #endif

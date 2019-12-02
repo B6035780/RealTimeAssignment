@@ -7,6 +7,7 @@ tinyxml2::XMLDocument Robot::xmlDie = NULL;
 Robot::Robot()
 {
 	PARSER->parseHierarchyFile("Resources/Robot/hierarchy.txt", components);
+	animator = new Animator();
 }
 
 Robot::Robot(float _x, float _y, float _z, float rotY)
@@ -29,21 +30,6 @@ void Robot::loadResources()
 			c->loadMesh(filePath.c_str());
 		}
 	});
-	/*body->loadMesh("Resources/Robot/body.x");
-	left_Ankle->loadMesh("Resources/Robot/left_ankle.x");
-	left_Elbow->loadMesh("Resources/Robot/left_elbow.x");
-	left_Hip->loadMesh("Resources/Robot/left_hip.x");
-	left_Knee->loadMesh("Resources/Robot/left_knee.x");
-	left_Shoulder->loadMesh("Resources/Robot/left_shoulder.x");
-	left_Wrist->loadMesh("Resources/Robot/left_wrist.x");
-	neck->loadMesh("Resources/Robot/neck.x");
-	pelvis->loadMesh("Resources/Robot/pelvis.x");
-	right_Ankle->loadMesh("Resources/Robot/right_ankle.x");
-	right_Elbow->loadMesh("Resources/Robot/right_elbow.x");
-	right_Hip->loadMesh("Resources/Robot/right_hip.x");
-	right_Knee->loadMesh("Resources/Robot/right_knee.x");
-	right_Shoulder->loadMesh("Resources/Robot/right_shoulder.x");
-	right_Wrist->loadMesh("Resources/Robot/right_wrist.x");*/
 
 	//Load animation files using assert checks
 	assert(0 == xmlIdle.LoadFile("Resources/Animations/RobotIdleAnim.xml"));
@@ -61,6 +47,7 @@ void Robot::releaseResources()
 		}
 		delete c;
 	});
+	delete animator;
 }
 
 void Robot::draw()
@@ -109,27 +96,29 @@ void Robot::updateMatricies(Component* c)
 
 void Robot::update()
 {
+	deltaTime = .000000001f * (TIME - lastFrame).count();
 	checkAnimationInput();
 
-	if ( animator.isAnimationPlaying() )
-		std::for_each(components.begin(), components.end(), std::bind(&Animator::updateAnimation, animator, std::placeholders::_1));
+	if ( animator->isAnimationPlaying() )
+		std::for_each(components.begin(), components.end(), std::bind(&Animator::updateAnimation, animator, std::placeholders::_1, deltaTime));
 
 	std::for_each(components.begin(), components.end(), std::bind(&Robot::updateMatricies, this, std::placeholders::_1));
+	lastFrame = TIME;
 }
 
 void Robot::checkAnimationInput()
 {
 	if (Application::s_pApp->IsKeyPressed('1'))
 	{
-		animator.changeAnimation(&xmlIdle, components);
+		animator->changeAnimation(&xmlIdle, components);
 	}
 	else if (Application::s_pApp->IsKeyPressed('2'))
 	{
-		animator.changeAnimation(&xmlAttack, components);
+		animator->changeAnimation(&xmlAttack, components);
 	}
 	else if (Application::s_pApp->IsKeyPressed('3'))
 	{
-		animator.changeAnimation(&xmlDie, components);
+		animator->changeAnimation(&xmlDie, components);
 	}
 }
 
