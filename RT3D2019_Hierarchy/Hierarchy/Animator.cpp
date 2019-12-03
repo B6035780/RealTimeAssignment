@@ -43,7 +43,10 @@ void Animator::update(std::vector<Component*> comps, float deltaTime)
 
 		if (sElapsed >= 1 && isSlowMotion())	
 		{
-			elapsed += deltaTime;
+			std::for_each(playingAnims.begin(), playingAnims.end(), [&deltaTime](Animation* a)
+			{
+				a->elapsed += deltaTime;
+			});
 			sElapsed = 0;
 		}
 

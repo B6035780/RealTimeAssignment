@@ -32,9 +32,9 @@ void Robot::loadResources()
 	});
 
 	//Load animation files
-	assert(0 == xmlIdle.LoadFile("Resources/Anims/RobotIdleAnim.xml"));
-	assert(0 == xmlAttack.LoadFile("Resources/Anims/RobotAttackAnim.xml"));
-	assert(0 == xmlDie.LoadFile("Resources/Anims/RobotDieAnim.xml"));
+	assert(0 == xmlIdle.LoadFile("Resources/Anims/RobotIdleAnim.dae"));
+	assert(0 == xmlAttack.LoadFile("Resources/Anims/RobotAttackAnim.dae"));
+	assert(0 == xmlDie.LoadFile("Resources/Anims/RobotDieAnim.dae"));
 
 	animator->loadAnimation(&xmlIdle, components, "idle");
 	animator->play("idle");

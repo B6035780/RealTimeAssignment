@@ -17,7 +17,7 @@ Parser* Parser::getParser()
 
 Animation* Parser::parseAnimationFile(const tinyxml2::XMLDocument* file, std::vector<Component*> comps)
 {
-	const tinyxml2::XMLNode* currentAnim = file->FirstChild()->FirstChild();
+	const tinyxml2::XMLNode* currentAnim = file->FirstChild()->NextSibling()->FirstChild()->NextSibling()->FirstChild();
 	std::string animName;
 	std::string compName, animType;
 	bool hasSibling = true;
@@ -151,7 +151,7 @@ void Parser::parseAnimation(const std::string& animName, const tinyxml2::XMLNode
 int Parser::getNumberOfKeyFrames(const tinyxml2::XMLDocument* file)	//Finds total num of keyframes in animation, by comparing frame count of every component
 {
 	int num(0), temp;
-	const tinyxml2::XMLNode* animRoot = file->FirstChild()->FirstChild();
+	const tinyxml2::XMLNode* animRoot = file->FirstChild()->NextSibling()->FirstChild()->NextSibling()->FirstChild();
 	const tinyxml2::XMLElement* anim = animRoot->FirstChild()->FirstChild()->ToElement();
 	std::stringstream ss;
 	bool hasSibling = true;
