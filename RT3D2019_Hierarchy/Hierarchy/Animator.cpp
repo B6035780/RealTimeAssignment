@@ -19,12 +19,12 @@ void Animator::play(std::string name)
 
 	for (int i = 0; i < playingAnims.size(); i++)	//Check if animation is already playing
 	{
-		if (playingAnims[i] == anims[name])
+		//if (playingAnims[i].compare(*anims[name]))
 			isAlreadyPlaying = true;
 	}
 
 	if (!isAlreadyPlaying)
-		playingAnims.push_back(anims[name]);
+		playingAnims.push_back(*anims[name]);
 }
 
 void Animator::update(std::vector<Component*> comps, float deltaTime)
@@ -35,18 +35,45 @@ void Animator::update(std::vector<Component*> comps, float deltaTime)
 
 		if (!isSlowMotion())	//check if slow mo key is down. If so, don't increment elapsed time until 1 second has passed
 		{
-			std::for_each(playingAnims.begin(), playingAnims.end(), [&deltaTime](Animation* a)
+			std::for_each(playingAnims.begin(), playingAnims.end(), [&deltaTime](Animation a)
 			{
-				a->elapsed += deltaTime;
+				a.elapsed += deltaTime;
 			});
+
+			if (playingAnims.size() != 1)	//If slow mo is active, blend factor is incremented once every second as well
+			{
+				if (blendFactor < 1.0f)	//If blendfactor reaches 1, reset it and remove animation from track, else increment it
+					blendFactor += blendSpeed;
+				else
+				{
+					blendFactor = 0;
+					playingAnims.front().elapsed = 0;
+					playingAnims.front().animFin = false;
+					playingAnims.erase(playingAnims.begin());
+				}
+			}
 		}
 
 		if (sElapsed >= 1 && isSlowMotion())	
 		{
-			std::for_each(playingAnims.begin(), playingAnims.end(), [&deltaTime](Animation* a)
+			std::for_each(playingAnims.begin(), playingAnims.end(), [&deltaTime](Animation a)
 			{
-				a->elapsed += deltaTime;
+				a.elapsed += deltaTime;
 			});
+
+			if (playingAnims.size() != 1)
+			{
+				if (blendFactor < 1.0f)
+					blendFactor += blendSpeed;
+				else
+				{
+					blendFactor = 0;
+					playingAnims.front().elapsed = 0;
+					playingAnims.front().animFin = false;
+					playingAnims.erase(playingAnims.begin());
+				}
+			}
+
 			sElapsed = 0;
 		}
 
@@ -75,35 +102,22 @@ void Animator::update(std::vector<Component*> comps, float deltaTime)
 			comps[i]->setRot(temp);
 		}
 
-		std::for_each(playingAnims.begin(), playingAnims.end(), [](Animation * a)
+		std::for_each(playingAnims.begin(), playingAnims.end(), [](Animation a)
 		{
-			if (a->animFin)
+			if (a.animFin)
 			{
-				a->elapsed = 0.0f;
-				a->animFin = false;
+				a.elapsed = 0.0f;
+				a.animFin = false;
 			}
 		});
-
-		if (playingAnims.size() != 1)
-		{
-			if (blendFactor < 1.0f)
-				blendFactor += blendSpeed;
-			else
-			{
-				blendFactor = 0;
-				playingAnims.front()->elapsed = 0;
-				playingAnims.front()->animFin = false;
-				playingAnims.erase(playingAnims.begin());
-			}
-		}
 	}
 }
 
-void Animator::interpolateComponent(Component* c, Animation* a)
+void Animator::interpolateComponent(Component* c, Animation& a)
 {
 	float x, y, z, t;
-	std::vector<KeyFrame> frames = a->getKeyFrames(c->getName());
-	t = a->elapsed;
+	std::vector<KeyFrame> frames = a.getKeyFrames(c->getName());
+	t = a.elapsed;
 
 	if (t <= frames[0].time)	//if time is before anim start
 	{
@@ -120,7 +134,7 @@ void Animator::interpolateComponent(Component* c, Animation* a)
 		y = frames.back().yRot;
 		z = frames.back().zRot;
 		workingRot = XMLoadFloat4(&XMFLOAT4(x, y, z, 0));
-		a->animFin = true;
+		a.animFin = true;
 	}
 	else
 	{
@@ -151,7 +165,7 @@ void Animator::interpolateComponent(Component* c, Animation* a)
 
 void Animator::loadAnimation(const tinyxml2::XMLDocument* file, std::vector<Component*> comps, std::string animName)
 {
-	anims[animName] = (PARSER->parseAnimationFile(file, comps));
+	anims[animName] = (PARSER->parseAnimationFile(file, comps, animName));
 }
 
 void Animator::deleteAnimations()

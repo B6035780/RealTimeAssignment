@@ -15,7 +15,7 @@ Parser* Parser::getParser()
 	return instance;
 }
 
-Animation* Parser::parseAnimationFile(const tinyxml2::XMLDocument* file, std::vector<Component*> comps)
+Animation* Parser::parseAnimationFile(const tinyxml2::XMLDocument* file, std::vector<Component*> comps, std::string name)
 {
 	const tinyxml2::XMLNode* currentAnim = file->FirstChild()->NextSibling()->FirstChild()->NextSibling()->FirstChild();
 	std::string animName;
@@ -44,7 +44,7 @@ Animation* Parser::parseAnimationFile(const tinyxml2::XMLDocument* file, std::ve
 			currentAnim = currentAnim->NextSibling();
 	}
 
-	return new Animation(keyFrames);
+	return new Animation(keyFrames, name);
 }
 
 void Parser::parseHierarchyFile(std::string filePath, std::vector<Component*>& comps)

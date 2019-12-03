@@ -6,9 +6,10 @@
 __declspec(align(16)) class Component
 {
 public:
-	Component();
-	Component(XMFLOAT4 pos, XMFLOAT4 rot, std::string par, std::string nombre);
-	~Component();
+	inline Component() {}
+	inline Component(XMFLOAT4 pos, XMFLOAT4 rot, std::string par, std::string nombre)
+		: m_v4Rot(rot), m_v4Pos(pos), parent(par), name(nombre) {}
+	inline ~Component() {}
 	
 	inline CommonMesh* getMesh() const { return s_pMesh; }
 	inline XMMATRIX getWorldMatrix() const { return m_mWorldMatrix; }
@@ -21,8 +22,8 @@ public:
 	inline void setRot(XMFLOAT4 rot) { m_v4Rot = rot; }
 	inline void setPos(XMFLOAT4 pos) { m_v4Pos = pos; }
 
-	void loadMesh(const char* filePath);
-	void releaseMesh();
+	inline void loadMesh(const char* filePath) { s_pMesh = CommonMesh::LoadFromXFile(Application::s_pApp, filePath); }
+	inline void releaseMesh() { delete s_pMesh; }
 
 	void* operator new(size_t i)
 	{
