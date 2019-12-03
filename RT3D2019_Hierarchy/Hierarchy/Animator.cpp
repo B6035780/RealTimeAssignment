@@ -13,103 +13,133 @@ bool Animator::isSlowMotion() const
 	return false;
 }
 
-void Animator::play(std::string name)
+void Animator::play(std::string name, int trackNo)	//If trackNo == -1, play on all tracks
 {
-	bool isAlreadyPlaying = false;
-
-	for (int i = 0; i < playingAnims.size(); i++)	//Check if animation is already playing
+	assert(tracks.size() > 0); 
+	Track* t;
+	if (trackNo != -1)
 	{
-		//if (playingAnims[i].compare(*anims[name]))
-			isAlreadyPlaying = true;
-	}
+		assert(trackNo > tracks.size());
+		t = tracks[trackNo];
+		bool isAlreadyPlaying = false;
 
-	if (!isAlreadyPlaying)
-		playingAnims.push_back(*anims[name]);
+		for (int i = 0; i < t->playingAnims.size(); i++)	//Check if animation is already playing
+		{
+			if (t->playingAnims[i] == *anims[name])
+				isAlreadyPlaying = true;
+		}
+
+		if (!isAlreadyPlaying)
+			t->playingAnims.push_back(*anims[name]);
+	}
+	else
+	{
+		for (int i = 0; i < tracks.size(); ++i)
+		{
+			t = tracks[i];
+			bool isAlreadyPlaying = false;
+			for (int i = 0; i < t->playingAnims.size(); i++)	
+			{
+				if (t->playingAnims[i] == *anims[name])
+					isAlreadyPlaying = true;
+			}
+
+			if (!isAlreadyPlaying)
+				t->playingAnims.push_back(*anims[name]);
+		}
+	}
 }
 
 void Animator::update(std::vector<Component*> comps, float deltaTime)
 {
-	if (playingAnims.size() != 0)	//Check if animations are playing
+	sElapsed += deltaTime;	
+
+	std::for_each(tracks.begin(), tracks.end(), std::bind(&Animator::updateTrack, this, deltaTime, std::placeholders::_1));
+
+	for (int i = 0; i < comps.size(); ++i)	
 	{
-		sElapsed += deltaTime;	//increment slowmo counter
+		Track* t = tracks[comps[i]->getAnimationTrack()];	//Check which track the component is attached to
 
-		if (!isSlowMotion())	//check if slow mo key is down. If so, don't increment elapsed time until 1 second has passed
+		for (int j = 0; j < t->playingAnims.size(); ++j)	//If more than one animation is playing on a track blend between them
 		{
-			std::for_each(playingAnims.begin(), playingAnims.end(), [&deltaTime](Animation a)
-			{
-				a.elapsed += deltaTime;
-			});
+			interpolateComponent(comps[i], t->playingAnims[j]);
 
-			if (playingAnims.size() != 1)	//If slow mo is active, blend factor is incremented once every second as well
+			if (j != 0)
 			{
-				if (blendFactor < 1.0f)	//If blendfactor reaches 1, reset it and remove animation from track, else increment it
-					blendFactor += blendSpeed;
-				else
-				{
-					blendFactor = 0;
-					playingAnims.front().elapsed = 0;
-					playingAnims.front().animFin = false;
-					playingAnims.erase(playingAnims.begin());
-				}
+				finalPos = XMVectorLerp(finalPos, workingPos, t->blendFactor);	//Blend final pos & rot with result of previous animation lerp
+				finalRot = XMVectorLerp(finalRot, workingRot, t->blendFactor);	//Else set to working pos & rot
+			}
+			else
+			{
+				finalPos = workingPos;
+				finalRot = workingRot;
 			}
 		}
+		XMFLOAT4 temp;
 
-		if (sElapsed >= 1 && isSlowMotion())	
+		XMStoreFloat4(&temp, finalPos);	//Set final transformation data after blending
+		comps[i]->setPos(temp);
+
+		XMStoreFloat4(&temp, finalRot);
+		comps[i]->setRot(temp);
+	}
+
+	for (int k = 0; k < tracks.size(); ++k)
+	{
+		std::for_each(tracks[k]->playingAnims.begin(), tracks[k]->playingAnims.end(), [](Animation& a)
 		{
-			std::for_each(playingAnims.begin(), playingAnims.end(), [&deltaTime](Animation a)
-			{
-				a.elapsed += deltaTime;
-			});
-
-			if (playingAnims.size() != 1)
-			{
-				if (blendFactor < 1.0f)
-					blendFactor += blendSpeed;
-				else
-				{
-					blendFactor = 0;
-					playingAnims.front().elapsed = 0;
-					playingAnims.front().animFin = false;
-					playingAnims.erase(playingAnims.begin());
-				}
-			}
-
-			sElapsed = 0;
-		}
-
-		for (int i = 0; i < comps.size(); ++i)	
-		{
-			for (int j = 0; j < playingAnims.size(); ++j)	//If more than one animation is playing blend between them
-			{
-				interpolateComponent(comps[i], playingAnims[j]);
-				if (j != 0)
-				{
-					finalPos = XMVectorLerp(finalPos, workingPos, blendFactor);
-					finalRot = XMVectorLerp(finalRot, workingRot, blendFactor);
-				}
-				else
-				{
-					finalPos = workingPos;
-					finalRot = workingRot;
-				}
-			}
-			XMFLOAT4 temp;
-
-			XMStoreFloat4(&temp, finalPos);
-			comps[i]->setPos(temp);
-
-			XMStoreFloat4(&temp, finalRot);
-			comps[i]->setRot(temp);
-		}
-
-		std::for_each(playingAnims.begin(), playingAnims.end(), [](Animation a)
-		{
-			if (a.animFin)
+			if (a.animFin &&
+				a.getIsRepeating())
 			{
 				a.elapsed = 0.0f;
 				a.animFin = false;
 			}
 		});
+	}
+
+	if (sElapsed >= 1 && isSlowMotion())
+		sElapsed = 0;
+}
+
+void Animator::updateTrack(float deltaTime, Track* t)
+{
+	if (!isSlowMotion())	//check if slow mo key is down. If so, don't increment elapsed time until 1 second has passed
+	{
+		std::for_each(t->playingAnims.begin(), t->playingAnims.end(), [&deltaTime](Animation& a)
+		{
+			a.elapsed += deltaTime;
+		});
+
+		if (t->playingAnims.size() != 1)
+		{
+			if (t->blendFactor < 1.0f)
+				t->blendFactor += t->blendSpeed;
+			else
+			{
+				t->blendFactor = 0;
+				while (t->playingAnims.size() != 1)
+					t->playingAnims.erase(t->playingAnims.begin());
+			}
+		}
+	}
+
+	if (sElapsed >= 1 && isSlowMotion())
+	{
+		std::for_each(t->playingAnims.begin(), t->playingAnims.end(), [&deltaTime](Animation& a)
+		{
+			a.elapsed += deltaTime;
+		});
+
+		if (t->playingAnims.size() != 1)
+		{
+			if (t->blendFactor < 1.0f)
+				t->blendFactor += t->blendSpeed;
+			else
+			{
+				t->blendFactor = 0;
+				t->playingAnims.erase(t->playingAnims.begin());
+			}
+		}
 	}
 }
 
@@ -168,12 +198,32 @@ void Animator::loadAnimation(const tinyxml2::XMLDocument* file, std::vector<Comp
 	anims[animName] = (PARSER->parseAnimationFile(file, comps, animName));
 }
 
-void Animator::deleteAnimations()
+void Animator::releaseResources()
 {
 	std::for_each(anims.begin(), anims.end(), [](std::pair<std::string, Animation*> a)
 	{
 		delete a.second;
 	});
+
+	std::for_each(tracks.begin(), tracks.end(), [](Track* t)
+	{
+		delete t;
+	});
+}
+
+void Animator::initTracks(std::vector<Component*> comps)
+{
+	int noOfTracks = 1;
+	for (int i = 0; i < comps.size(); ++i)	//Check animTrack of every component to see how many tracks are needed
+	{
+		if (noOfTracks <= comps[i]->getAnimationTrack())
+			noOfTracks = comps[i]->getAnimationTrack() + 1;
+	}
+	
+	for (int j = 0; j < noOfTracks; ++j)
+	{
+		tracks.push_back(new Track());
+	}
 }
 
 Animator::~Animator()

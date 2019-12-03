@@ -24,7 +24,7 @@ public:
 private:
 	std::vector<Component*> components;	
 	
-	static tinyxml2::XMLDocument xmlIdle, xmlAttack, xmlDie; //Animation XML files
+	static tinyxml2::XMLDocument xmlIdle, xmlAttack, xmlDie; //Animation DAE files
 
 	Animator* animator;
 

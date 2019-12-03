@@ -24,6 +24,7 @@ public:
 private:
 	static Parser* instance;
 	static void parseAnimation(const std::string& animName, const tinyxml2::XMLNode* currentAnim, std::string compName, std::map<std::string, std::vector<KeyFrame>>& keyFrames);
+	static int getTrackNo(std::string name);
 
 	Parser();
 };

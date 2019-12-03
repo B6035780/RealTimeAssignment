@@ -70,9 +70,22 @@ void Parser::parseHierarchyFile(std::string filePath, std::vector<Component*>& c
 		fs >> z;
 
 		offset = XMFLOAT4(x / 10, y / 10, z / 10, 0);
-		comps.push_back(new Component(offset, rot, parent, name));
+		comps.push_back(new Component(offset, rot, parent, name, getTrackNo(name)));
 		fs.get(c);
 	}
+}
+
+int Parser::getTrackNo(std::string name)
+{
+	if (name == "left_hip"		||
+		name == "left_knee"		||
+		name == "left_ankle"	||
+		name == "right_hip"		||
+		name == "right_knee"	||
+		name == "right_ankle")
+		return 1;
+	else
+		return 0;
 }
 
 void Parser::parseAnimation(const std::string& animName, const tinyxml2::XMLNode* currentAnim, std::string compName, std::map<std::string, std::vector<KeyFrame>>& keyFrames)
@@ -183,3 +196,4 @@ void Parser::deleteParser()
 {
 	delete instance;
 }
+

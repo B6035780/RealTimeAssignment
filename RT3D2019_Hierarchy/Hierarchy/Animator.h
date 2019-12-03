@@ -9,9 +9,11 @@
 #include <ctime>
 #include <functional>
 
-struct track
+struct Track
 {
-	std::vector<Animation> playingAnims;
+	float blendFactor = 0.0f;
+	float blendSpeed = 0.1f;
+	std::vector<Animation> playingAnims; //Animations being interpolated between
 };
 
 class Animator
@@ -21,25 +23,23 @@ public:
 	~Animator();
 
 	void update(std::vector<Component*> comps, float deltaTime);
-	void interpolateComponent(Component* c, Animation& a);
-	void play(std::string name);
+	void play(std::string name, int trackNo = -1);
 	void loadAnimation(const tinyxml2::XMLDocument* file, std::vector<Component*> comps, std::string animName);
-	void deleteAnimations();
-	bool isSlowMotion() const;
+	void releaseResources();
+	void initTracks(std::vector<Component*> comps);
 
 private:
 	std::map<std::string, Animation*> anims;	//Animations available to play
-	std::vector<Animation> playingAnims;		//Animations being interpolated between
+	std::vector<Track*> tracks;
 
-	float elapsed = 0.0f;
-	float sElapsed = 0.0f;
-	float blendFactor = 0.0f;
-	float blendSpeed = 0.1f;
+	float sElapsed = 0.0f;	//Slow-mo counter. Resets every second
 
-	XMVECTOR workingPos, workingRot;
-	XMVECTOR finalPos, finalRot;
+	XMVECTOR workingPos, workingRot;	//Working rot & pos are set at the end of each animation interp 
+	XMVECTOR finalPos, finalRot;		//Final pos & rot are the result of blending the result of each animation
 
-	bool animFin = false;
+	void interpolateComponent(Component* c, Animation& a);
+	void updateTrack(float deltaTime, Track* t);
+	bool isSlowMotion() const;
 };
 
 #endif

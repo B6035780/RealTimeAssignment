@@ -36,6 +36,8 @@ void Robot::loadResources()
 	assert(0 == xmlAttack.LoadFile("Resources/Anims/RobotAttackAnim.dae"));
 	assert(0 == xmlDie.LoadFile("Resources/Anims/RobotDieAnim.dae"));
 
+	animator->initTracks(components);
+	
 	animator->loadAnimation(&xmlIdle, components, "idle");
 	animator->play("idle");
 	animator->loadAnimation(&xmlAttack, components, "attack");
@@ -53,7 +55,7 @@ void Robot::releaseResources()
 		delete c;
 	});
 
-	animator->deleteAnimations();
+	animator->releaseResources();
 	delete animator;
 }
 

@@ -6,9 +6,8 @@
 __declspec(align(16)) class Component
 {
 public:
-	inline Component() {}
-	inline Component(XMFLOAT4 pos, XMFLOAT4 rot, std::string par, std::string nombre)
-		: m_v4Rot(rot), m_v4Pos(pos), parent(par), name(nombre) {}
+	inline Component(XMFLOAT4 pos, XMFLOAT4 rot, std::string par, std::string nombre, int animationTrack = 0)
+		: m_v4Rot(rot), m_v4Pos(pos), parent(par), name(nombre), animationTrack(animationTrack) {}
 	inline ~Component() {}
 	
 	inline CommonMesh* getMesh() const { return s_pMesh; }
@@ -17,6 +16,7 @@ public:
 	inline XMFLOAT4 getPos() const { return m_v4Pos; }
 	inline std::string getParent() const { return parent; }
 	inline std::string getName() const { return name; }
+	inline int getAnimationTrack() const { return animationTrack; }
 
 	inline void setWorldMatrix(XMMATRIX m) { m_mWorldMatrix = m; }
 	inline void setRot(XMFLOAT4 rot) { m_v4Rot = rot; }
@@ -43,6 +43,8 @@ private:
 
 	const std::string name; 
 	const std::string parent;
+
+	const int animationTrack;
 };
 #endif
 
