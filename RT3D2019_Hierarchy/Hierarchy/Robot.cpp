@@ -37,6 +37,7 @@ void Robot::loadResources()
 	assert(0 == xmlDie.LoadFile("Resources/Anims/RobotDieAnim.xml"));
 
 	animator->loadAnimation(&xmlIdle, components, "idle");
+	animator->play("idle");
 	animator->loadAnimation(&xmlAttack, components, "attack");
 	animator->loadAnimation(&xmlDie, components, "die");
 }
@@ -102,10 +103,10 @@ void Robot::updateMatricies(Component* c)
 
 void Robot::update()
 {
-	deltaTime = .000000001f * (TIME - lastFrame).count();
-	checkAnimationInput();
+	deltaTime = .000000001f * (TIME - lastFrame).count();	//right-hand of * is delta time in nanoseconds. Left-hand converts to seconds
+	checkAnimationInput();	
 
-	animator->update(components, deltaTime);
+	animator->update(components, deltaTime);	
 
 	std::for_each(components.begin(), components.end(), std::bind(&Robot::updateMatricies, this, std::placeholders::_1));
 	lastFrame = TIME;

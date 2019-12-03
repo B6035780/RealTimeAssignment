@@ -15,10 +15,10 @@ public:
 	inline Animation(std::map<std::string, std::vector<KeyFrame>> frames)
 		: keyFrames(frames) {}
 
-	inline int getNumberOfKeyFrames() { return noOfKeyFrames; }
-	inline std::vector<KeyFrame> getKeyFrames(std::string componentName) { return keyFrames.at(componentName); }
+	inline std::vector<KeyFrame> getKeyFrames(std::string componentName) const { return keyFrames.at(componentName); }
+	float elapsed = 0;
+	bool animFin = false;
 private:
-	int noOfKeyFrames;
 	std::map<std::string, std::vector<KeyFrame>> keyFrames;	//Holds all keyframes for every component, using component name as key
 };
 #endif

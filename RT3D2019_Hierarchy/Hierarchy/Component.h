@@ -40,7 +40,7 @@ private:
 	XMFLOAT4 m_v4Pos;
 	XMMATRIX m_mWorldMatrix;
 
-	const std::string name; //Used for parsing
+	const std::string name; 
 	const std::string parent;
 };
 #endif
