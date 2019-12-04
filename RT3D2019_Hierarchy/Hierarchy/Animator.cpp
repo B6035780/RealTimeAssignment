@@ -19,7 +19,7 @@ void Animator::play(std::string name, int trackNo)	//If trackNo == -1, play on a
 	Track* t;
 	if (trackNo != -1)
 	{
-		assert(trackNo > tracks.size());
+		//assert(trackNo > tracks.size());
 		t = tracks[trackNo];
 		bool isAlreadyPlaying = false;
 

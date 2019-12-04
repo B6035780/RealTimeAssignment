@@ -116,17 +116,26 @@ void Robot::update()
 
 void Robot::checkAnimationInput()
 {
+	bool upArrowPress = Application::s_pApp->IsKeyPressed(VK_UP);
+	bool downArrowPress = Application::s_pApp->IsKeyPressed(VK_DOWN);
+	int trackNo = -1;	//Default value plays on every track
+
+	if (Application::s_pApp->IsKeyPressed(VK_UP))
+		trackNo = 0;
+	else if (Application::s_pApp->IsKeyPressed(VK_DOWN))
+		trackNo = 1;
+
 	if (Application::s_pApp->IsKeyPressed('1'))
 	{
-		animator->play("idle");
+		animator->play("idle", trackNo);
 	}
 	else if (Application::s_pApp->IsKeyPressed('2'))
 	{
-		animator->play("attack");
+		animator->play("attack", trackNo);
 	}
 	else if (Application::s_pApp->IsKeyPressed('3'))
 	{
-		animator->play("die");
+		animator->play("die", trackNo);
 	}
 }
 
