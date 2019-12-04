@@ -58,30 +58,33 @@ void Animator::update(std::vector<Component*> comps, float deltaTime)
 
 	for (int i = 0; i < comps.size(); ++i)	
 	{
-		Track* t = tracks[comps[i]->getAnimationTrack()];	//Check which track the component is attached to
-
-		for (int j = 0; j < t->playingAnims.size(); ++j)	//If more than one animation is playing on a track blend between them
+		if (comps[i]->getName() != "root")
 		{
-			interpolateComponent(comps[i], t->playingAnims[j]);
+			Track* t = tracks[comps[i]->getAnimationTrack()];	//Check which track the component is attached to
 
-			if (j != 0)
+			for (int j = 0; j < t->playingAnims.size(); ++j)	//If more than one animation is playing on a track blend between them
 			{
-				finalPos = XMVectorLerp(finalPos, workingPos, t->blendFactor);	//Blend final pos & rot with result of previous animation lerp
-				finalRot = XMVectorLerp(finalRot, workingRot, t->blendFactor);	//Else set to working pos & rot
+				interpolateComponent(comps[i], t->playingAnims[j]);
+
+				if (j != 0)
+				{
+					finalPos = XMVectorLerp(finalPos, workingPos, t->blendFactor);	//Blend final pos & rot with result of previous animation lerp
+					finalRot = XMVectorLerp(finalRot, workingRot, t->blendFactor);	//Else set to working pos & rot
+				}
+				else
+				{
+					finalPos = workingPos;
+					finalRot = workingRot;
+				}
 			}
-			else
-			{
-				finalPos = workingPos;
-				finalRot = workingRot;
-			}
+			XMFLOAT4 temp;
+
+			XMStoreFloat4(&temp, finalPos);	//Set final transformation data after blending
+			comps[i]->setPos(temp);
+
+			XMStoreFloat4(&temp, finalRot);
+			comps[i]->setRot(temp);
 		}
-		XMFLOAT4 temp;
-
-		XMStoreFloat4(&temp, finalPos);	//Set final transformation data after blending
-		comps[i]->setPos(temp);
-
-		XMStoreFloat4(&temp, finalRot);
-		comps[i]->setRot(temp);
 	}
 
 	for (int k = 0; k < tracks.size(); ++k)

@@ -40,7 +40,7 @@ class Application : public CommonApp
 	int m_cameraState;
 
 	Aeroplane* m_pAeroplane;
-	Robot* m_pRobot;
+	std::vector<Robot*> m_pRobots;
 	HeightMap* m_pHeightMap;
 };
 

@@ -23,10 +23,15 @@ bool Application::HandleStart()
 
 	m_pHeightMap = new HeightMap("Resources/heightmap.bmp", 2.0f);
 	m_pAeroplane = new Aeroplane(0.0f, 3.5f, 0.0f, 105.0f);
-	m_pRobot = new Robot();
+	m_pRobots.push_back(new Robot());
+	m_pRobots.push_back(new Robot(-20, 0, 10, 90));
+	m_pRobots.push_back(new Robot(20, 0, 10, -90));
 
 	m_pAeroplane->LoadResources();
-	m_pRobot->loadResources();
+	std::for_each(m_pRobots.begin(), m_pRobots.end(), [](Robot* r)
+	{
+		r->loadResources();
+	});
 
 	m_cameraZ = 50.0f;
 	m_rotationAngle = 0.f;
@@ -49,8 +54,11 @@ void Application::HandleStop()
 	delete m_pHeightMap;
 	Aeroplane::ReleaseResources();
 	delete m_pAeroplane;
-	m_pRobot->releaseResources();
-	delete m_pRobot;
+	std::for_each(m_pRobots.begin(), m_pRobots.end(), [](Robot* r)
+	{
+		r->releaseResources();
+		delete r;
+	});
 	Parser::deleteParser();
 	this->CommonApp::HandleStop();
 }
@@ -104,7 +112,10 @@ void Application::HandleUpdate()
 	}
 
 	m_pAeroplane->Update(m_cameraState != CAMERA_MAP);
-	m_pRobot->update();
+	std::for_each(m_pRobots.begin(), m_pRobots.end(), [](Robot* r)
+	{
+		r->update();
+	});
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -154,7 +165,10 @@ void Application::HandleRender()
 
 	m_pHeightMap->Draw();
 	m_pAeroplane->Draw();
-	m_pRobot->draw();
+	std::for_each(m_pRobots.begin(), m_pRobots.end(), [](Robot* r)
+	{
+		r->draw();
+	});
 }
 
 //////////////////////////////////////////////////////////////////////

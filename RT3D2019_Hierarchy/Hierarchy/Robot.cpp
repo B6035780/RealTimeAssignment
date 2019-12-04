@@ -12,7 +12,11 @@ Robot::Robot()
 
 Robot::Robot(float _x, float _y, float _z, float rotY)
 {
-	
+	PARSER->parseHierarchyFile("Resources/Robot/hierarchy.txt", components);
+	XMFLOAT4 pos(components[0]->getPos().x + _x, components[0]->getPos().y + _y, components[0]->getPos().z + _z, 0);
+	components[0]->setPos(pos);
+	components[0]->setRot(XMFLOAT4(components[0]->getRot().x, rotY, components[0]->getRot().z, 0));
+	animator = new Animator();
 }
 
 void Robot::loadResources()
